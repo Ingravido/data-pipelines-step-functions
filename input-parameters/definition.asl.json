@@ -1,0 +1,267 @@
+{
+    "Comment": "A description of my state machine",
+    "StartAt": "MetricDate not Present?",
+    "States": {
+      "MetricDate not Present?": {
+        "Type": "Choice",
+        "Choices": [
+          {
+            "Variable": "$.MetricDate",
+            "IsPresent": false,
+            "Next": "Set empty MetricDate"
+          }
+        ],
+        "Default": "Parallel"
+      },
+      "Set empty MetricDate": {
+        "Next": "Parallel",
+        "Result": "",
+        "ResultPath": "$.MetricDate",
+        "Type": "Pass"
+      },
+      "Parallel": {
+        "Type": "Parallel",
+        "Next": "Pre process params Merge Metrics",
+        "Branches": [
+          {
+            "StartAt": "Pre process params M1",
+            "States": {
+              "Pre process params M1": {
+                "Type": "Pass",
+                "Parameters": {
+                  "FormattedInputsForEmr": {
+                    "Args": [
+                      {
+                        "Arg1": "spark-submit"
+                      },
+                      {
+                        "Arg2": "--class"
+                      },
+                      {
+                        "Arg3": "com.company.project.main.Metric1App"
+                      },
+                      {
+                        "Arg4": "s3://s3-artifact/app-jar.jar"
+                      },
+                      {
+                        "Arg5.$": "$.MetricDate"
+                      }
+                    ]
+                  }
+                },
+                "Next": "Calculate Metric 1"
+              },
+              "Calculate Metric 1": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::elasticmapreduce:addStep",
+                "Parameters": {
+                  "ClusterId": "MyEMRClusterId",
+                  "Step": {
+                    "Name": "MyStepName",
+                    "HadoopJarStep": {
+                      "Jar": "command-runner.jar",
+                      "Args.$": "$.FormattedInputsForEmr.Args[*][*]"
+                    }
+                  }
+                },
+                "End": true
+              }
+            }
+          },
+          {
+            "StartAt": "Pre process params M2",
+            "States": {
+              "Pre process params M2": {
+                "Type": "Pass",
+                "Parameters": {
+                  "FormattedInputsForEmr": {
+                    "Args": [
+                      {
+                        "Arg1": "spark-submit"
+                      },
+                      {
+                        "Arg2": "--class"
+                      },
+                      {
+                        "Arg3": "com.company.project.main.Metric2App"
+                      },
+                      {
+                        "Arg4": "s3://s3-artifact/app-jar.jar"
+                      },
+                      {
+                        "Arg5.$": "$.MetricDate"
+                      }
+                    ]
+                  }
+                },
+                "Next": "Calculate Metric 2"
+              },
+              "Calculate Metric 2": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::elasticmapreduce:addStep",
+                "Parameters": {
+                  "ClusterId": "MyEMRClusterId",
+                  "Step": {
+                    "Name": "MyStepName",
+                    "HadoopJarStep": {
+                      "Jar": "command-runner.jar",
+                      "Args.$": "$.FormattedInputsForEmr.Args[*][*]"
+                    }
+                  }
+                },
+                "End": true
+              }
+            }
+          },
+          {
+            "StartAt": "Pre process params M3",
+            "States": {
+              "Pre process params M3": {
+                "Type": "Pass",
+                "Parameters": {
+                  "FormattedInputsForEmr": {
+                    "Args": [
+                      {
+                        "Arg1": "spark-submit"
+                      },
+                      {
+                        "Arg2": "--class"
+                      },
+                      {
+                        "Arg3": "com.company.project.main.Metric3App"
+                      },
+                      {
+                        "Arg4": "s3://s3-artifact/app-jar.jar"
+                      },
+                      {
+                        "Arg5.$": "$.MetricDate"
+                      }
+                    ]
+                  }
+                },
+                "Next": "Calculate Metric 3"
+              },
+              "Calculate Metric 3": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::elasticmapreduce:addStep",
+                "Parameters": {
+                  "ClusterId": "MyEMRClusterId",
+                  "Step": {
+                    "Name": "MyStepName",
+                    "HadoopJarStep": {
+                      "Jar": "command-runner.jar",
+                      "Args.$": "$.FormattedInputsForEmr.Args[*][*]"
+                    }
+                  }
+                },
+                "End": true
+              }
+            }
+          },
+          {
+            "StartAt": "Pre process params MN",
+            "States": {
+              "Pre process params MN": {
+                "Type": "Pass",
+                "Parameters": {
+                  "FormattedInputsForEmr": {
+                    "Args": [
+                      {
+                        "Arg1": "spark-submit"
+                      },
+                      {
+                        "Arg2": "--class"
+                      },
+                      {
+                        "Arg3": "com.company.project.main.MetricNApp"
+                      },
+                      {
+                        "Arg4": "s3://s3-artifact/app-jar.jar"
+                      },
+                      {
+                        "Arg5.$": "$.MetricDate"
+                      }
+                    ]
+                  }
+                },
+                "Next": "Calculate Metric N"
+              },
+              "Calculate Metric N": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::elasticmapreduce:addStep",
+                "Parameters": {
+                  "ClusterId": "MyEMRClusterId",
+                  "Step": {
+                    "Name": "MyStepName",
+                    "HadoopJarStep": {
+                      "Jar": "command-runner.jar",
+                      "Args.$": "$.FormattedInputsForEmr.Args[*][*]"
+                    }
+                  }
+                },
+                "End": true
+              }
+            }
+          }
+        ],
+        "Parameters": {
+          "MetricDate.$": "$.MetricDate"
+        }
+      },
+      "Pre process params Merge Metrics": {
+        "Type": "Pass",
+        "Parameters": {
+          "FormattedInputsForEmr": {
+            "Args": [
+              {
+                "Arg1": "spark-submit"
+              },
+              {
+                "Arg2": "--class"
+              },
+              {
+                "Arg3": "com.company.project.main.MetricsMeegeApp"
+              },
+              {
+                "Arg4": "s3://s3-artifact/app-jar.jar"
+              },
+              {
+                "Arg5.$": "$.MetricDate"
+              }
+            ]
+          }
+        },
+        "Next": "Merge metrics"
+      },
+      "Merge metrics": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::elasticmapreduce:addStep",
+        "Parameters": {
+          "ClusterId": "MyEMRClusterId",
+          "Step": {
+            "Name": "MyStepName",
+            "HadoopJarStep": {
+              "Jar": "MyJarFile.jar"
+            }
+          }
+        },
+        "Catch": [
+          {
+            "ErrorEquals": [
+              "States.ALL"
+            ],
+            "Next": "Report Issue to SNS"
+          }
+        ],
+        "End": true
+      },
+      "Report Issue to SNS": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::sns:publish",
+        "Parameters": {
+          "Message.$": "$"
+        },
+        "End": true
+      }
+    }
+  }

@@ -1,0 +1,126 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "Parallel",
+  "States": {
+    "Parallel": {
+      "Type": "Parallel",
+      "Next": "Merge metrics",
+      "Branches": [
+        {
+          "StartAt": "Calculate Metric 1",
+          "States": {
+            "Calculate Metric 1": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::elasticmapreduce:addStep",
+              "Parameters": {
+                "ClusterId": "MyEMRClusterId",
+                "Step": {
+                  "Name": "MyStepName",
+                  "HadoopJarStep": {
+                    "Jar": "MyJarFile.jar"
+                  }
+                }
+              },
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Calculate Metric 2",
+          "States": {
+            "Calculate Metric 2": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::elasticmapreduce:addStep",
+              "Parameters": {
+                "ClusterId": "MyEMRClusterId",
+                "Step": {
+                  "Name": "MyStepName",
+                  "HadoopJarStep": {
+                    "Jar": "MyJarFile.jar"
+                  }
+                }
+              },
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Calculate Metric 3",
+          "States": {
+            "Calculate Metric 3": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::elasticmapreduce:addStep",
+              "Parameters": {
+                "ClusterId": "MyEMRClusterId",
+                "Step": {
+                  "Name": "MyStepName",
+                  "HadoopJarStep": {
+                    "Jar": "MyJarFile.jar"
+                  }
+                }
+              },
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Calculate Metric N",
+          "States": {
+            "Calculate Metric N": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::elasticmapreduce:addStep",
+              "Parameters": {
+                "ClusterId": "MyEMRClusterId",
+                "Step": {
+                  "Name": "MyStepName",
+                  "HadoopJarStep": {
+                    "Jar": "MyJarFile.jar"
+                  }
+                }
+              },
+              "End": true
+            }
+          }
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "Report Issue to SNS"
+        }
+      ]
+    },
+    "Merge metrics": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::elasticmapreduce:addStep",
+      "Parameters": {
+        "ClusterId": "MyEMRClusterId",
+        "Step": {
+          "Name": "MyStepName",
+          "HadoopJarStep": {
+            "Jar": "MyJarFile.jar"
+          }
+        }
+      },
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "Report Issue to SNS"
+        }
+      ],
+      "End": true
+    },
+    "Report Issue to SNS": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message.$": "$"
+      },
+      "End": true
+    }
+  }
+}
